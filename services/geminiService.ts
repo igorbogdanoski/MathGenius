@@ -101,6 +101,32 @@ export const generateSimilarProblem = async (originalProblem: Problem, language:
   }
 };
 
+export const chatWithTutor = async (question: string, problemContext: Problem, history: {role: string, content: string}[], language: string): Promise<string> => {
+  if (!ai) return "AI Configuration missing.";
+
+  try {
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const chat = model.startChat({
+      history: history.map(h => ({
+        role: h.role === 'user' ? 'user' : 'model',
+        parts: [{ text: h.content }]
+      })),
+      generationConfig: { maxOutputTokens: 200 }
+    });
+
+    const prompt = `Student Question: "${question}"
+    Context: The student is solving this math problem: "${problemContext.question[language as keyof typeof problemContext.question]}"
+    Instruction: Act as a helpful math tutor. Do NOT give the answer directly. Guide them towards it. Use ${language}. 
+    IMPORTANT: Wrap formulas in '$'.`;
+
+    const result = await chat.sendMessage(prompt);
+    return result.response.text();
+  } catch (error) {
+    console.error("Chat Error", error);
+    return "I'm having trouble thinking right now. Can we try again?";
+  }
+};
+
 export const generateBossProblem = async (userHistory: any[], language: string): Promise<Problem | null> => {
   if (!ai) return null;
 
