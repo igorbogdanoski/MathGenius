@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat, Volume2, Cloud, CloudCheck, Sparkles } from 'lucide-react';
+import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat, Volume2, Cloud, Sparkles } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import InteractiveGraph from './InteractiveGraph';
 import SlopeVisualizer from './SlopeVisualizer';
@@ -208,7 +208,7 @@ const ActiveLesson: React.FC = () => {
                     </div>
                 ) : (
                     <div className="flex items-center gap-1.5 text-slate-300">
-                        <CloudCheck className="w-3.5 h-3.5" />
+                        <Cloud className="w-3.5 h-3.5" />
                         <span className="hidden md:inline">Saved</span>
                     </div>
                 )}
