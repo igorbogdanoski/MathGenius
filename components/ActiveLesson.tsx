@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat } from 'lucide-react';
+import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat, Volume2 } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import InteractiveGraph from './InteractiveGraph';
 import SlopeVisualizer from './SlopeVisualizer';
@@ -10,6 +10,7 @@ import VoiceInput from './VoiceInput';
 import { useUser } from '../context/UserContext';
 import { useLesson } from '../context/LessonContext';
 import { UI_LABELS } from '../constants';
+import { soundService } from '../services/soundService';
 
 // Internal Confetti Component
 const Confetti = () => {
@@ -214,9 +215,18 @@ const ActiveLesson: React.FC = () => {
               </div>
               
               {/* Question Text */}
-              <h2 className="text-xl md:text-2xl font-semibold mb-6 leading-relaxed text-slate-800">
-                <MathRenderer text={currentProblem.question[userState.language]} />
-              </h2>
+              <div className="flex items-start gap-4 mb-6">
+                <h2 className="text-xl md:text-2xl font-semibold leading-relaxed text-slate-800 flex-1">
+                    <MathRenderer text={currentProblem.question[userState.language]} />
+                </h2>
+                <button 
+                    onClick={() => soundService.speak(currentProblem.question[userState.language], userState.language)}
+                    className="p-3 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors shadow-sm active:scale-95 shrink-0"
+                    title="Read Question"
+                >
+                    <Volume2 className="w-6 h-6" />
+                </button>
+              </div>
 
               {/* Dynamic Content Renderer */}
               <div className="mt-6">

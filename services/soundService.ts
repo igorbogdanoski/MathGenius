@@ -106,6 +106,36 @@ class SoundService {
     this.isMuted = !this.isMuted;
     return this.isMuted;
   }
+
+  /**
+   * Text-to-Speech implementation
+   * @param text The text to read
+   * @param lang The language code (MK, SQ, TR, EN)
+   */
+  public speak(text: string, lang: string) {
+    if (this.isMuted) return;
+    
+    // Clean text from LaTeX symbols for better reading
+    const cleanText = text.replace(/\$/g, '').replace(/\\text\{([^}]+)\}/g, '$1');
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Map our language codes to BCP 47 tags
+    const langMap: Record<string, string> = {
+      'MK': 'mk-MK',
+      'SQ': 'sq-AL',
+      'TR': 'tr-TR',
+      'EN': 'en-US'
+    };
+
+    utterance.lang = langMap[lang] || 'en-US';
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1.0;
+
+    // Stop any current speech before starting new one
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
 export const soundService = new SoundService();
