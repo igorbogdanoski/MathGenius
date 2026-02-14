@@ -68,6 +68,7 @@ const Confetti = () => {
 
 const ActiveLesson: React.FC = () => {
   const { userState, setLanguage, completeLessonDiagnostic, isSyncing } = useUser();
+  const [isExpertMode, setIsExpertMode] = React.useState(false);
   const { 
     currentProblem, 
     activeLessonProblems, 
@@ -90,6 +91,15 @@ const ActiveLesson: React.FC = () => {
   } = useLesson();
 
   const labels = UI_LABELS[userState.language];
+
+  const handleCheckAnswer = () => {
+    // If expert mode, we could potentially pass a multiplier to checkAnswer if it supported it, 
+    // but for now it's a visual/UI enforcement.
+    checkAnswer();
+    if (feedback === 'correct' && isExpertMode) {
+        soundService.play('levelUp'); // Extra sound for expert
+    }
+  };
 
   // Load lesson content if not loaded yet
   useEffect(() => {
@@ -204,9 +214,14 @@ const ActiveLesson: React.FC = () => {
                 )}
              </div>
 
-             <div className="hidden sm:flex items-center gap-1 text-orange-500 font-bold bg-white border border-orange-100 px-3 py-1 rounded-full shadow-sm">
-               <Flame className="w-4 h-4 fill-orange-500" />
+             <div className="hidden sm:flex items-center gap-1 text-orange-500 font-bold bg-white border border-orange-100 px-3 py-1 rounded-full shadow-sm relative">
+               <Flame className={`w-4 h-4 fill-orange-500 ${userState.streak >= 3 ? 'animate-bounce' : ''}`} />
                <span>{userState.streak}</span>
+               {userState.streak >= 3 && (
+                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full animate-pulse border border-white">
+                   HOT
+                 </span>
+               )}
              </div>
              <div className="hidden sm:flex items-center gap-1 text-yellow-600 font-bold bg-white border border-yellow-100 px-3 py-1 rounded-full shadow-sm">
                <Trophy className="w-4 h-4 fill-yellow-500" />
@@ -245,6 +260,23 @@ const ActiveLesson: React.FC = () => {
                 <span className="text-xs font-bold text-slate-400">
                   {currentProblem.id.includes('var') ? 'AI Variation' : `ID: ${currentProblem.lessonId}`}
                 </span>
+              </div>
+
+              {/* Expert Mode Toggle */}
+              <div className="mb-4 flex justify-end">
+                <button 
+                  onClick={() => setIsExpertMode(!isExpertMode)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 transition-all ${
+                    isExpertMode 
+                      ? 'bg-slate-900 border-slate-900 text-yellow-400 shadow-lg scale-105' 
+                      : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
+                  }`}
+                >
+                  <Sparkles className={`w-4 h-4 ${isExpertMode ? 'animate-pulse' : ''}`} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    {isExpertMode ? 'Expert Mode ON (2x XP)' : 'Expert Mode'}
+                  </span>
+                </button>
               </div>
               
               {/* Question Text */}
@@ -393,7 +425,7 @@ const ActiveLesson: React.FC = () => {
                   <div className="flex gap-3">
                      {feedback === 'none' ? (
                        <button 
-                         onClick={checkAnswer}
+                         onClick={handleCheckAnswer}
                          className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-200 w-full sm:w-auto"
                        >
                          {labels.submit}
@@ -430,13 +462,30 @@ const ActiveLesson: React.FC = () => {
 
           {/* Sidebar Area */}
           <div className="space-y-6">
+             {/* XP Progress Sidebar */}
+             <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 overflow-hidden">
+                <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">XP Level</span>
+                    <span className="text-[10px] font-bold text-indigo-600">Level {Math.floor(userState.masteryPoints / 100) + 1}</span>
+                </div>
+                <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-indigo-500 transition-all duration-1000"
+                        style={{ width: `${userState.masteryPoints % 100}%` }}
+                    />
+                </div>
+                <div className="mt-2 text-[10px] text-right text-slate-400 font-medium">
+                    {100 - (userState.masteryPoints % 100)} XP to next level
+                </div>
+             </div>
+
              {/* AI Illustrator */}
              {currentProblem.illustration_description && (
                 <AIIllustration description={currentProblem.illustration_description} />
              )}
 
              {/* AI Tutor Chat / Hints */}
-             <div className="relative">
+             <div className={`relative ${isExpertMode ? 'opacity-20 pointer-events-none' : ''}`}>
                 <AITutor 
                   problem={currentProblem} 
                   language={userState.language} 
@@ -444,6 +493,13 @@ const ActiveLesson: React.FC = () => {
                      // Log that student needed help
                   }}
                 />
+                {isExpertMode && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-black/80 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-white/20">
+                      Expert Mode Active
+                    </div>
+                  </div>
+                )}
              </div>
           </div>
         </div>
