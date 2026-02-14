@@ -1,26 +1,25 @@
-import { GoogleGenAI, SchemaType } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Problem } from '../types';
 
 // In a real scenario, we use the API key. 
 // For this demo, we mock the response to avoid crashing if no key is present.
 const isConfigured = !!import.meta.env.VITE_GEMINI_API_KEY;
 
-let ai: GoogleGenAI | null = null;
+let ai: GoogleGenerativeAI | null = null;
 if (isConfigured) {
-  ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY as string });
+  ai = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
 }
 
 export const generateExplanation = async (problem: Problem, language: string): Promise<string> => {
   if (!ai) return "AI Configuration missing. Using static explanation.";
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `Explain the math problem "${problem.question[language as keyof typeof problem.question]}" to a 14 year old student in ${language}. 
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent(`Explain the math problem "${problem.question[language as keyof typeof problem.question]}" to a 14 year old student in ${language}. 
       Keep it brief.
-      IMPORTANT: Wrap all mathematical formulas, variables, and numbers in LaTeX delimiters '$' (e.g., $y=2x$, $10^{\\circ}$).`,
-    });
-    return response.text || "Could not generate explanation.";
+      IMPORTANT: Wrap all mathematical formulas, variables, and numbers in LaTeX delimiters '$' (e.g., $y=2x$, $10^{\\circ}$).`);
+    
+    return response.response.text() || "Could not generate explanation.";
   } catch (error) {
     console.error("AI Error", error);
     return "AI service temporarily unavailable.";
@@ -41,12 +40,10 @@ export const generateSVG = async (description: string): Promise<string | null> =
     4. Ensure viewBox is "0 0 200 200".
     5. Do NOT include any text inside the SVG, only shapes.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-    });
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent(prompt);
     
-    let svg = response.text || "";
+    let svg = response.response.text() || "";
     svg = svg.replace(/```xml/g, '').replace(/```svg/g, '').replace(/```/g, '').trim();
     return svg;
   } catch (error) {
@@ -78,13 +75,13 @@ export const generateSimilarProblem = async (originalProblem: Problem, language:
       4. Return ONLY the JSON string, no markdown.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: { responseMimeType: 'application/json' }
+    const model = ai.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
     });
+    const response = await model.generateContent(prompt);
 
-    const text = response.text;
+    const text = response.response.text();
     if (!text) return null;
 
     const data = JSON.parse(text);
@@ -96,9 +93,6 @@ export const generateSimilarProblem = async (originalProblem: Problem, language:
       question: data.question,
       correctAnswer: data.correctAnswer,
       ai_tutor_logic: data.ai_tutor_logic,
-      // Keep type and config but clear specific points if they don't match new math
-      // For complex graph problems, we might need more advanced AI logic, 
-      // but for input/text problems this works great.
       graphConfig: undefined 
     };
   } catch (error) {
@@ -127,13 +121,13 @@ export const generateBossProblem = async (userHistory: any[], language: string):
       IMPORTANT: Wrap formulas in $ (e.g. $y=mx+c$). Return ONLY JSON.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: { responseMimeType: 'application/json' }
+    const model = ai.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
     });
+    const response = await model.generateContent(prompt);
 
-    const data = JSON.parse(response.text || "{}");
+    const data = JSON.parse(response.response.text() || "{}");
     
     return {
       id: `boss_battle_${Date.now()}`,
