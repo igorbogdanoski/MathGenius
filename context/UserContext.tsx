@@ -45,39 +45,32 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const init = async () => {
         setIsLoading(true);
-        // Check local storage for an existing userId first
         const localRaw = localStorage.getItem('mathGeniusState');
-        let existingId = 'guest_user';
-        if (localRaw) {
-            try {
+        
+        try {
+            if (localRaw) {
                 const parsed = JSON.parse(localRaw);
-                if (parsed.userId) existingId = parsed.userId;
-            } catch(e){}
+                if (parsed.userId && parsed.userId !== 'guest_user') {
+                    const saved = await dataService.loadUserState(parsed.userId);
+                    if (saved) {
+                        const merged = { ...DEFAULT_STATE, ...saved };
+                        // Ensure arrays exist
+                        merged.completedLessons = merged.completedLessons || [];
+                        merged.history = merged.history || [];
+                        merged.badges = merged.badges || [];
+                        setUserState(merged);
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+            }
+        } catch(e) {
+            console.warn("State initialization failed, starting fresh");
         }
 
-        const saved = await dataService.loadUserState(existingId);
-        if (saved) {
-             // Robust Migration & Sanity Checks
-             const merged = { ...DEFAULT_STATE, ...saved };
-             
-             // Ensure critical arrays and objects exist
-             if (!merged.inventory) merged.inventory = DEFAULT_STATE.inventory;
-             if (!merged.completedLessons) merged.completedLessons = [];
-             if (!merged.badges) merged.badges = [];
-             if (!merged.history) merged.history = [];
-             if (!merged.equipped) merged.equipped = DEFAULT_STATE.equipped;
-             if (!merged.userId) merged.userId = `user_${Math.random().toString(36).substr(2, 9)}`;
-             
-             // Validate language
-             const validLangs = ['MK', 'EN', 'SQ', 'TR'];
-             if (!validLangs.includes(merged.language)) merged.language = 'MK';
-
-             setUserState(merged);
-        } else {
-             // Create new user with unique ID
-             const newId = `user_${Math.random().toString(36).substr(2, 9)}`;
-             setUserState(prev => ({ ...prev, userId: newId }));
-        }
+        // Fresh Start - Generate unique ID immediately
+        const newId = `user_${Math.random().toString(36).substr(2, 9)}`;
+        setUserState(prev => ({ ...prev, userId: newId }));
         setIsLoading(false);
     };
     init();
@@ -186,6 +179,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const resetProgress = () => {
+    if (confirm("Дали сте сигурни дека сакате да го избришете напредокот?")) {
+        localStorage.removeItem('mathGeniusState');
+        window.location.reload();
+    }
+  };
+
   return (
     <UserContext.Provider value={{ 
       userState, 
@@ -200,6 +200,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       registerUser,
       completeLessonDiagnostic,
       markLessonComplete,
+      resetProgress,
       isLoading,
       isSyncing
     }}>

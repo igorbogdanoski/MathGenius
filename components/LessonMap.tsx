@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Map, ShoppingBag, Trophy, Flame, Brain, Check, Lock, PlayCircle, Star, Cloud, LayoutGrid, Beaker, Sparkles } from 'lucide-react';
+import { Map, ShoppingBag, Trophy, Flame, Brain, Check, Lock, PlayCircle, Star, Cloud, LayoutGrid, Beaker, Sparkles, RefreshCcw } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import AvatarShop from './AvatarShop';
 import Leaderboard from './Leaderboard';
@@ -42,7 +42,7 @@ const LESSON_MAP: { id: string; title: Translation; desc: Translation }[] = [
 ];
 
 const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
-  const { userState, updateUser, setLanguage } = useUser();
+  const { userState, updateUser, setLanguage, resetProgress } = useUser();
   const { startLesson } = useLesson();
   const labels = UI_LABELS[userState.language];
   
@@ -121,6 +121,13 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                 <div className="flex items-center gap-1 text-orange-500 font-bold bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
                    <Flame className="w-4 h-4 fill-orange-500" /> <span>{userState.streak}</span>
                 </div>
+                <button 
+                  onClick={resetProgress}
+                  className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                  title="Ресетирај напредок"
+                >
+                   <RefreshCcw className="w-4 h-4" />
+                </button>
                 <LanguageSelector currentLang={userState.language} onLanguageChange={setLanguage} />
                 
                 <button onClick={() => setShowShop(true)} className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xl relative shadow-sm hover:scale-110 transition-transform">
