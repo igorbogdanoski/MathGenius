@@ -13,7 +13,6 @@ interface Props {
   onEnterTeacherMode: () => void;
 }
 
-// Update Lesson Map Data Structure to Support Translations
 const LESSON_MAP: { id: string; title: Translation; desc: Translation }[] = [
   { 
     id: '11.1', 
@@ -22,7 +21,7 @@ const LESSON_MAP: { id: string; title: Translation; desc: Translation }[] = [
   },
   { 
     id: '11.2', 
-    title: { MK: 'Цртање Графици', EN: 'Plotting Graphs', SQ: 'Vizatimi i Grafikëve', TR: 'Grafik Çзими' }, 
+    title: { MK: 'Цртање Графици', EN: 'Plotting Graphs', SQ: 'Vizatimi i Grafikëve', TR: 'Grafik Çizimi' }, 
     desc: { MK: 'Цртање линии од табели', EN: 'Drawing lines from tables', SQ: 'Vizatimi i vijave nga tabelat', TR: 'Tablolardan çizgi çizme' } 
   },
   { 
@@ -64,10 +63,8 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
     }
   };
 
-  // Helper to check if a lesson is completed
   const isLessonCompleted = (id: string) => userState.completedLessons.includes(id);
 
-  // FOG OF WAR LOGIC
   let furthestUnlockedIndex = 0;
   if (isLessonCompleted('Start')) {
       for (let i = 0; i < LESSON_MAP.length; i++) {
@@ -135,7 +132,7 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
 
          <main className="max-w-7xl mx-auto p-6 pb-32">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* Left Side: Map Content */}
+                {/* Left Side */}
                 <div className="lg:col-span-8">
                     <div className="mb-8 text-center lg:text-left">
                         <h2 className="text-2xl font-bold text-slate-900">{labels.unitTitle}</h2>
@@ -143,10 +140,8 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                     </div>
                     
                     <div className="space-y-6 relative">
-                        {/* Connector Line */}
                         <div className="absolute left-8 top-10 bottom-10 w-1 bg-gradient-to-b from-indigo-100 to-slate-100 rounded-full z-0"></div>
 
-                        {/* Diagnostic Node */}
                         <div className="relative z-10">
                             <button 
                                 onClick={() => handleStartLesson('Start')}
@@ -166,7 +161,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                             </button>
                         </div>
 
-                        {/* Progressive Lessons */}
                         {LESSON_MAP.map((lesson, idx) => {
                             const prevLessonId = idx === 0 ? 'Start' : LESSON_MAP[idx - 1].id;
                             const isLocked = !isLessonCompleted(prevLessonId);
@@ -212,7 +206,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                                             : isMasterTask ? <Star className="w-6 h-6 text-yellow-600 animate-pulse" />
                                             : <span className="font-bold text-lg text-purple-600 group-hover:scale-110 transition-transform">{idx + 1}</span>}
                                         </div>
-                                        
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 {isMasterTask ? (
@@ -226,7 +219,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                                             <h3 className="font-bold text-lg text-slate-800">{lesson.title[userState.language]}</h3>
                                             <p className="text-sm text-slate-500">{lesson.desc[userState.language]}</p>
                                         </div>
-
                                         {!isLocked && !isDone && (
                                             <div className={`${isMasterTask ? 'bg-yellow-100' : 'bg-purple-50'} p-2 rounded-full group-hover:scale-110 transition-transform`}>
                                                 <PlayCircle className={`w-5 h-5 ${isMasterTask ? 'text-yellow-600' : 'text-purple-600'}`} />
@@ -237,7 +229,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                             );
                         })}
 
-                        {/* New Unit Placeholder */}
                         {isUnitComplete && (
                             <div className="relative z-10 pl-2 mt-8 animate-fade-in-up">
                                 <div className="flex items-center gap-2 mb-4 justify-center">
@@ -258,7 +249,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                         )}
                     </div>
                     
-                    {/* Fog Overlay */}
                     {!isUnitComplete && (
                         <div className="mt-8 flex flex-col items-center justify-center text-slate-400 gap-2">
                             <Cloud className="w-8 h-8 opacity-20" />
@@ -267,7 +257,7 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                     )}
                 </div>
 
-                {/* Right Side: Leaderboard & Stats */}
+                {/* Right Side */}
                 <div className="lg:col-span-4 space-y-6">
                     <Leaderboard />
                     
@@ -287,7 +277,6 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                             </div>
                         </div>
 
-                        {/* Badges Preview */}
                         <div className="mt-6 pt-6 border-t border-white/10">
                             <div className="text-[10px] uppercase font-bold text-indigo-100 mb-3">Your Badges</div>
                             <div className="flex flex-wrap gap-2">
