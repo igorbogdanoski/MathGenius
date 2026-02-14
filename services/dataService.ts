@@ -195,6 +195,33 @@ class DataService {
     return this.getCustomProblemsLocal();
   }
 
+  async getLeaderboard(): Promise<StudentProfile[]> {
+    if (!db) return [];
+    try {
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        const students: StudentProfile[] = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            students.push({
+                id: doc.id,
+                name: data.name || 'Anonymous',
+                avatar: data.equipped?.avatar || '👤',
+                overallMastery: data.overallMastery || (data.masteryPoints ? Math.min(100, data.masteryPoints / 10) : 0),
+                status: data.status || 'On Track',
+                weakestTopic: data.weakestTopic || 'N/A',
+                strongestTopic: data.strongestTopic || 'N/A',
+                lastActive: 'Active',
+                history: []
+            });
+        });
+        // Sort by mastery points descending
+        return students.sort((a, b) => b.overallMastery - a.overallMastery).slice(0, 10);
+    } catch (e) {
+        console.error("Leaderboard fetch failed", e);
+        return [];
+    }
+  }
+
   getLessonContent(lessonId: string): Problem[] {
     // Note: This function remains synchronous for now to avoid breaking UI render loops.
     // Ideally, the LessonContext should handle async loading.

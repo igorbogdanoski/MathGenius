@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat, Volume2 } from 'lucide-react';
+import { Map, Flame, Trophy, Star, Check, X, Info, RefreshCcw, ChevronRight, Home, Repeat, Volume2, Cloud, CloudCheck, Sparkles } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import InteractiveGraph from './InteractiveGraph';
 import SlopeVisualizer from './SlopeVisualizer';
@@ -67,7 +67,7 @@ const Confetti = () => {
   };
 
 const ActiveLesson: React.FC = () => {
-  const { userState, setLanguage, completeLessonDiagnostic } = useUser();
+  const { userState, setLanguage, completeLessonDiagnostic, isSyncing } = useUser();
   const { 
     currentProblem, 
     activeLessonProblems, 
@@ -77,6 +77,7 @@ const ActiveLesson: React.FC = () => {
     specificError, 
     hasExplained, 
     loadingVariation, 
+    loadingBoss,
     lessonComplete,
     startLesson, 
     setInputValues, 
@@ -149,6 +150,23 @@ const ActiveLesson: React.FC = () => {
       );
   }
 
+  if (loadingBoss) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 font-sans p-6 text-center">
+        <div className="flex flex-col items-center gap-6 max-w-sm">
+          <div className="relative">
+            <div className="w-24 h-24 border-8 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
+            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-yellow-500 animate-pulse" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-white mb-2 tracking-tight uppercase italic">Summoning the Boss...</h2>
+            <p className="text-slate-400 font-medium leading-relaxed">Gemini AI is crafting a unique challenge based on your performance.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!currentProblem) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">
@@ -171,6 +189,21 @@ const ActiveLesson: React.FC = () => {
           </button>
           
           <div className="flex items-center gap-4">
+             {/* Sync Indicator */}
+             <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider">
+                {isSyncing ? (
+                    <div className="flex items-center gap-1.5 text-indigo-500 animate-pulse">
+                        <Cloud className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">Syncing...</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-1.5 text-slate-300">
+                        <CloudCheck className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">Saved</span>
+                    </div>
+                )}
+             </div>
+
              <div className="hidden sm:flex items-center gap-1 text-orange-500 font-bold bg-white border border-orange-100 px-3 py-1 rounded-full shadow-sm">
                <Flame className="w-4 h-4 fill-orange-500" />
                <span>{userState.streak}</span>

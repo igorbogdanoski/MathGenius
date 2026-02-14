@@ -10,12 +10,14 @@ interface UserContextType {
   incrementStreak: () => void;
   resetStreak: () => void;
   unlockItem: (itemId: string, cost: number) => void;
+  unlockBadge: (badgeId: string) => void;
   equipItem: (type: 'avatar' | 'accessory' | 'theme', value: string | null) => void;
   setLanguage: (lang: Language) => void;
   registerUser: (lang: Language, name: string) => void;
   completeLessonDiagnostic: (newPath: 'Focus' | 'Practice' | 'Challenge') => void;
   markLessonComplete: (lessonId: string) => void;
   isLoading: boolean;
+  isSyncing: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -30,12 +32,14 @@ const DEFAULT_STATE: UserState = {
     history: [],
     completedLessons: [],
     inventory: ['av_student', 'th_default'],
-    equipped: { avatar: '🧑‍🎓', accessory: null, theme: 'bg-slate-50' }
+    equipped: { avatar: '🧑‍🎓', accessory: null, theme: 'bg-slate-50' },
+    badges: []
 };
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userState, setUserState] = useState<UserState>(DEFAULT_STATE);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Initial Load (Async)
   useEffect(() => {
@@ -57,6 +61,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
              if (!saved.userId) saved.userId = `user_${Math.random().toString(36).substr(2, 9)}`;
              if (!saved.inventory) saved.inventory = DEFAULT_STATE.inventory;
              if (!saved.completedLessons) saved.completedLessons = [];
+             if (!saved.badges) saved.badges = [];
              setUserState(saved);
         } else {
              // Create new user with unique ID
@@ -70,10 +75,30 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Persistence Effect (Save on change)
   useEffect(() => {
-    if (!isLoading) {
-        dataService.saveUserState(userState);
-    }
+    const saveData = async () => {
+        if (!isLoading) {
+            setIsSyncing(true);
+            await dataService.saveUserState(userState);
+            // Artificial delay for UX visibility
+            setTimeout(() => setIsSyncing(false), 800);
+        }
+    };
+    saveData();
   }, [userState, isLoading]);
+
+  // Badge Check Effect
+  useEffect(() => {
+    if (userState.history.length >= 1) unlockBadge('first_win');
+    if (userState.streak >= 3) unlockBadge('streak_3');
+    if (userState.completedLessons.includes('CheckProgress')) unlockBadge('master_11');
+    
+    // Speed Demon Check
+    const lastAction = userState.history[userState.history.length - 1];
+    if (lastAction && lastAction.correct) {
+        // We don't have exact 'timeSpent' in history here but we could add it.
+        // For now let's just use what we have.
+    }
+  }, [userState.history, userState.streak, userState.completedLessons]);
 
   const updateUser = (updates: Partial<UserState>) => {
     setUserState(prev => ({ ...prev, ...updates }));
@@ -142,6 +167,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const unlockBadge = (badgeId: string) => {
+    if (!userState.badges.includes(badgeId)) {
+        setUserState(prev => ({
+            ...prev,
+            badges: [...prev.badges, badgeId]
+        }));
+    }
+  };
+
   return (
     <UserContext.Provider value={{ 
       userState, 
@@ -150,12 +184,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       incrementStreak, 
       resetStreak, 
       unlockItem, 
+      unlockBadge,
       equipItem,
       setLanguage,
       registerUser,
       completeLessonDiagnostic,
       markLessonComplete,
-      isLoading
+      isLoading,
+      isSyncing
     }}>
       {children}
     </UserContext.Provider>

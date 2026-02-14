@@ -6,13 +6,13 @@ import { getAuth } from 'firebase/auth';
 // TODO: Replace with your actual Firebase project config from the Firebase Console
 // Go to: console.firebase.google.com -> Create Project -> Add Web App -> Copy Config
 const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY || "YOUR_FIREBASE_API_KEY",
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN || "mathgenius-app.firebaseapp.com",
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID || "mathgenius-app",
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET || "mathgenius-app.appspot.com",
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "00000000000",
-  appId: process.env.VITE_FIREBASE_APP_ID || "1:00000000000:web:00000000000000",
-  measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase only if we have a valid key (prevents crashing in pure demo mode without keys)

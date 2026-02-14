@@ -75,6 +75,7 @@ export interface UserState {
     accessory: string | null;
     theme: string;
   };
+  badges: string[]; // IDs of earned badges
 }
 
 // --- NEW TEACHER DASHBOARD TYPES ---

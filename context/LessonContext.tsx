@@ -3,7 +3,7 @@ import { Problem, UserState } from '../types';
 import { dataService } from '../services/dataService';
 import { soundService } from '../services/soundService';
 import { validateGraph, areExpressionsEquivalent, analyzeLinearError } from '../services/mathSolver';
-import { generateSimilarProblem } from '../services/geminiService';
+import { generateSimilarProblem, generateBossProblem } from '../services/geminiService';
 import { useUser } from './UserContext';
 
 // Fisher-Yates shuffle
@@ -25,6 +25,7 @@ interface LessonContextType {
   feedback: 'none' | 'correct' | 'incorrect';
   specificError: string | null;
   loadingVariation: boolean;
+  loadingBoss: boolean;
   hasExplained: boolean;
   lessonComplete: boolean;
   
@@ -51,13 +52,29 @@ export const LessonProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [feedback, setFeedback] = useState<'none' | 'correct' | 'incorrect'>('none');
   const [specificError, setSpecificError] = useState<string | null>(null);
   const [loadingVariation, setLoadingVariation] = useState(false);
+  const [loadingBoss, setLoadingBoss] = useState(false);
   const [hasExplained, setHasExplained] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
 
   const currentProblem = activeLessonProblems[currentProblemIndex] || null;
 
   // Initialize/Reset State when starting a lesson
-  const startLesson = (lessonId: string) => {
+  const startLesson = async (lessonId: string) => {
+    if (lessonId === 'CheckProgress') {
+        setLoadingBoss(true);
+        const bossProb = await generateBossProblem(userState.history, userState.language);
+        if (bossProb) {
+          setActiveLessonProblems([bossProb]);
+          setCurrentProblemIndex(0);
+          setLessonComplete(false);
+          resetProblemState();
+          updateUser({ currentLessonId: lessonId, currentProblemIndex: 0 });
+          setLoadingBoss(false);
+          return;
+        }
+        setLoadingBoss(false);
+    }
+
     let problems = dataService.getLessonContent(lessonId);
 
     if (problems.length === 0) {

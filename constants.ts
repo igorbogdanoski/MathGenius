@@ -187,6 +187,13 @@ export const UI_LABELS = {
   }
 };
 
+export const BADGES = [
+  { id: 'first_win', name: 'First Success', icon: '🎯', criteria: 'Complete 1st problem' },
+  { id: 'streak_3', name: 'On Fire', icon: '🔥', criteria: '3 correct in a row' },
+  { id: 'master_11', name: 'Graph Master', icon: '📐', criteria: 'Finish Unit 11' },
+  { id: 'speed_demon', name: 'Fast Learner', icon: '⚡', criteria: 'Correct in < 10s' }
+];
+
 export const SAMPLE_LESSON: Lesson = {
   id: "COURSE_BOOK_1",
   title: {
@@ -205,66 +212,6 @@ export const SAMPLE_LESSON: Lesson = {
     // ==========================================
     // GETTING STARTED (DIAGNOSTIC)
     // ==========================================
-    {
-      id: "GS_Q1a",
-      lessonId: "Start",
-      type: "input",
-      difficulty: "Focus",
-      question: {
-        MK: "Еден пар чевли чини $25 помалку од еден капут. Ако капутот чини $110, најди ја цената на чевлите.",
-        EN: "A pair of shoes costs $25 less than a coat. If the coat costs $110, find the price of the shoes.",
-        SQ: "Një palë këpucë kushtojnë $25 më pak se një pallto. Nëse palltoja kushton $110, gjeni çmimin e këpucëve.",
-        TR: "Bir çift ayakkabı bir paltodan $25 daha ucuzdur. Palto $110 ise, ayakkabının fiyatını bulun."
-      },
-      ai_tutor_logic: {
-        hint: {
-          MK: "Цената на чевлите е $110 минус $25.",
-          EN: "The price of shoes is $110 minus $25.",
-          SQ: "Çmimi i këpucëve është $110 minus $25.",
-          TR: "Ayakkabının fiyatı $110 eksi $25'tir."
-        },
-        explanation: {
-          MK: "$110 - 25 = 85$.",
-          EN: "$110 - 25 = 85$.",
-          SQ: "$110 - 25 = 85$.",
-          TR: "$110 - 25 = 85$."
-        }
-      },
-      correctAnswer: "85"
-    },
-    {
-      id: "GS_Q2",
-      lessonId: "Start",
-      type: "multiple_choice",
-      difficulty: "Focus",
-      question: {
-        MK: "Еден сингапурски долар може да се замени за 80 јапонски јени. Ако $d$ сингапурски долари можат да се заменат за $y$ јапонски јени, која од овие равенки е точна?",
-        EN: "One Singapore Dollar can be exchanged for 80 Japanese Yen. If $d$ Singapore Dollars can be exchanged for $y$ Japanese Yen, which equation is correct?",
-        SQ: "Një dollar Singapori mund të këmbehet me 80 jen japonez. Nëse $d$ dollarë këmbehen me $y$ jen, cili ekuacion është i saktë?",
-        TR: "Bir Singapur Doları 80 Japon Yeni ile değiştirilebilir. $d$ Singapur Doları $y$ Japon Yeni ile değiştirilebiliyorsa, hangi denklem doğrudur?"
-      },
-      options: [
-        { MK: "$y=d+80$", EN: "$y=d+80$", SQ: "$y=d+80$", TR: "$y=d+80$" },
-        { MK: "$y=d-80$", EN: "$y=d-80$", SQ: "$y=d-80$", TR: "$y=d-80$" },
-        { MK: "$y=80d$", EN: "$y=80d$", SQ: "$y=80d$", TR: "$y=80d$" },
-        { MK: "$y=\\frac{d}{80}$", EN: "$y=\\frac{d}{80}$", SQ: "$y=\\frac{d}{80}$", TR: "$y=\\frac{d}{80}$" }
-      ],
-      ai_tutor_logic: {
-        hint: {
-          MK: "За секој 1 долар добивате 80 јени. Треба да множите.",
-          EN: "For every 1 dollar you get 80 yen. You need to multiply.",
-          SQ: "Për çdo 1 dollar merrni 80 jen. Duhet të shumëzoni.",
-          TR: "Her 1 dolar için 80 yen alırsınız. Çarpmanız gerekir."
-        },
-        explanation: {
-          MK: "Бидејќи 1 долар = 80 јени, $d$ долари = $80 \\times d$. Значи $y = 80d$.",
-          EN: "Since 1 dollar = 80 yen, $d$ dollars = $80 \\times d$. So $y = 80d$.",
-          SQ: "Meqenëse 1 dollar = 80 jen, $d$ dollarë = $80 \\times d$. Pra $y = 80d$.",
-          TR: "1 dolar = 80 yen olduğundan, $d$ dolar = $80 \\times d$. Yani $y = 80d$."
-        }
-      },
-      correctAnswer: 2
-    },
     {
       id: "GS_Q4b",
       lessonId: "Start",
@@ -353,6 +300,33 @@ export const SAMPLE_LESSON: Lesson = {
       correctAnswer: "L=37-6t"
     },
 
+    {
+      id: "11.2_Q8_NEW",
+      lessonId: "11.2",
+      type: "input",
+      difficulty: "Practice",
+      question: {
+        MK: "Најди го градиентот (m) на правата што минува низ точките (0,0) и (4,8).",
+        EN: "Find the gradient (m) of the line passing through points (0,0) and (4,8).",
+        SQ: "Gjeni gradientin (m) e vijës që kalon nëpër pikat (0,0) dhe (4,8).",
+        TR: "(0,0) ve (4,8) noktalarından geçen doğrunun eğimini (m) bulun."
+      },
+      ai_tutor_logic: {
+        hint: {
+          MK: "Градиент = (y2 - y1) / (x2 - x1).",
+          EN: "Gradient = (y2 - y1) / (x2 - x1).",
+          SQ: "Gradienti = (y2 - y1) / (x2 - x1).",
+          TR: "Eğim = (y2 - y1) / (x2 - x1)."
+        },
+        explanation: {
+          MK: "(8 - 0) / (4 - 0) = 8 / 4 = 2.",
+          EN: "(8 - 0) / (4 - 0) = 8 / 4 = 2.",
+          SQ: "(8 - 0) / (4 - 0) = 8 / 4 = 2.",
+          TR: "(8 - 0) / (4 - 0) = 8 / 4 = 2."
+        }
+      },
+      correctAnswer: "2"
+    },
     // ==========================================
     // WORKBOOK 11.2: PLOTTING GRAPHS
     // ==========================================

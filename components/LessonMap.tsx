@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Map, ShoppingBag, Trophy, Flame, Brain, Check, Lock, PlayCircle, Star, Cloud } from 'lucide-react';
+import { Map, ShoppingBag, Trophy, Flame, Brain, Check, Lock, PlayCircle, Star, Cloud, LayoutGrid, Beaker, Sparkles } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import AvatarShop from './AvatarShop';
+import Leaderboard from './Leaderboard';
+import GraphLab from './GraphLab';
 import { useUser } from '../context/UserContext';
-import { UI_LABELS } from '../constants';
+import { useLesson } from '../context/LessonContext';
+import { UI_LABELS, BADGES } from '../constants';
 import { Translation } from '../types';
 
 interface Props {
@@ -41,13 +44,15 @@ const LESSON_MAP: { id: string; title: Translation; desc: Translation }[] = [
 
 const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
   const { userState, updateUser, setLanguage } = useUser();
+  const { startLesson } = useLesson();
   const labels = UI_LABELS[userState.language];
   
   const [showShop, setShowShop] = useState(false);
+  const [showLab, setShowLab] = useState(false);
   const [logoClicks, setLogoClicks] = useState(0);
 
   const handleStartLesson = (lessonId: string) => {
-    updateUser({ currentLessonId: lessonId, currentProblemIndex: 0 });
+    startLesson(lessonId);
   };
 
   const handleLogoClick = () => {
@@ -88,12 +93,27 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
            />
          )}
 
+         {showLab && (
+           <GraphLab 
+             language={userState.language}
+             onClose={() => setShowLab(false)}
+           />
+         )}
+
          <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-20 shadow-sm">
             <div className="flex items-center gap-2">
                <Map className="w-6 h-6 text-indigo-600" />
                <h1 className="font-bold text-lg">{labels.myLearningPath}</h1>
             </div>
             <div className="flex items-center gap-4">
+                {/* Lab Button */}
+                <button 
+                  onClick={() => setShowLab(true)}
+                  className="hidden md:flex items-center gap-2 text-purple-600 bg-purple-50 px-3 py-1 rounded-full font-bold hover:bg-purple-100 transition shadow-sm"
+                >
+                  <Beaker className="w-4 h-4" /> Lab
+                </button>
+
                 {/* Shop Button */}
                 <button 
                   onClick={() => setShowShop(true)}
@@ -118,17 +138,20 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
             </div>
          </header>
 
-         <main className="max-w-3xl mx-auto p-6 pb-32">
-            <div className="mb-8 text-center">
-               <h2 className="text-2xl font-bold text-slate-900">{labels.unitTitle}</h2>
-               <p className="text-slate-500">{labels.unitDesc}</p>
-            </div>
-            
-            <div className="space-y-6 relative">
-               {/* Connector Line - Only distinct up to unlocked point */}
-               <div 
-                className="absolute left-8 top-10 bottom-10 w-1 bg-gradient-to-b from-indigo-100 to-slate-100 rounded-full z-0"
-               ></div>
+         <main className="max-w-7xl mx-auto p-6 pb-32">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* Left Side: Map Content */}
+                <div className="lg:col-span-8">
+                    <div className="mb-8 text-center lg:text-left">
+                    <h2 className="text-2xl font-bold text-slate-900">{labels.unitTitle}</h2>
+                    <p className="text-slate-500">{labels.unitDesc}</p>
+                    </div>
+                    
+                    <div className="space-y-6 relative">
+                    {/* Connector Line - Only distinct up to unlocked point */}
+                    <div 
+                        className="absolute left-8 top-10 bottom-10 w-1 bg-gradient-to-b from-indigo-100 to-slate-100 rounded-full z-0"
+                    ></div>
 
                {/* Diagnostic / Start Node (Always Visible) */}
                <div className="relative z-10">
@@ -266,6 +289,53 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                     <p className="text-xs font-medium uppercase tracking-widest opacity-50">{labels.hiddenFog}</p>
                 </div>
             )}
+
+                    </div>
+                </div>
+
+                {/* Right Side: Leaderboard & Stats */}
+                <div className="lg:col-span-4 space-y-6">
+                    <Leaderboard />
+                    
+                    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-3xl text-white shadow-lg overflow-hidden relative">
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+                        <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
+                            <LayoutGrid className="w-5 h-5" /> Quick Stats
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                            <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
+                                <div className="text-[10px] uppercase font-bold text-indigo-100">Progress</div>
+                                <div className="text-xl font-bold">{Math.round((furthestUnlockedIndex / LESSON_MAP.length) * 100)}%</div>
+                            </div>
+                            <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-sm">
+                                <div className="text-[10px] uppercase font-bold text-indigo-100">Mastery</div>
+                                <div className="text-xl font-bold">{userState.masteryPoints}</div>
+                            </div>
+                        </div>
+
+                        {/* Badges Preview */}
+                        <div className="mt-6 pt-6 border-t border-white/10">
+                            <div className="text-[10px] uppercase font-bold text-indigo-100 mb-3">Your Badges</div>
+                            <div className="flex flex-wrap gap-2">
+                                {BADGES.map(badge => {
+                                    const isEarned = userState.badges.includes(badge.id);
+                                    return (
+                                        <div 
+                                            key={badge.id}
+                                            title={`${badge.name}: ${badge.criteria}`}
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all ${
+                                                isEarned ? 'bg-white/20 scale-110 shadow-lg' : 'bg-black/20 opacity-30 grayscale'
+                                            }`}
+                                        >
+                                            {badge.icon}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div className="mt-12 text-center">
               <button 

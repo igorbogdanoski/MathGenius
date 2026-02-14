@@ -3,11 +3,11 @@ import { Problem } from '../types';
 
 // In a real scenario, we use the API key. 
 // For this demo, we mock the response to avoid crashing if no key is present.
-const isConfigured = !!process.env.VITE_GEMINI_API_KEY;
+const isConfigured = !!import.meta.env.VITE_GEMINI_API_KEY;
 
 let ai: GoogleGenAI | null = null;
 if (isConfigured) {
-  ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY as string });
+  ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY as string });
 }
 
 export const generateExplanation = async (problem: Problem, language: string): Promise<string> => {
@@ -103,6 +103,48 @@ export const generateSimilarProblem = async (originalProblem: Problem, language:
     };
   } catch (error) {
     console.error("Variation Error", error);
+    return null;
+  }
+};
+
+export const generateBossProblem = async (userHistory: any[], language: string): Promise<Problem | null> => {
+  if (!ai) return null;
+
+  try {
+    const prompt = `
+      Act as a strict but fair math boss. The student is finishing Unit 11 (Graphs).
+      Based on their history: ${JSON.stringify(userHistory.slice(-5))}, create ONE final challenge problem.
+      It should involve interpreting a graph or solving for both m and c.
+      Return valid JSON matching this structure:
+      {
+        "question": { "EN": "...", "MK": "...", "SQ": "...", "TR": "..." },
+        "correctAnswer": "...",
+        "ai_tutor_logic": {
+          "hint": { "EN": "...", "MK": "...", "SQ": "...", "TR": "..." },
+          "explanation": { "EN": "...", "MK": "...", "SQ": "...", "TR": "..." }
+        }
+      }
+      IMPORTANT: Wrap formulas in $ (e.g. $y=mx+c$). Return ONLY JSON.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+      config: { responseMimeType: 'application/json' }
+    });
+
+    const data = JSON.parse(response.text || "{}");
+    
+    return {
+      id: `boss_battle_${Date.now()}`,
+      lessonId: 'CheckProgress',
+      type: 'input',
+      difficulty: 'Challenge',
+      question: data.question,
+      correctAnswer: data.correctAnswer,
+      ai_tutor_logic: data.ai_tutor_logic
+    };
+  } catch (e) {
     return null;
   }
 };
