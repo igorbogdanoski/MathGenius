@@ -291,7 +291,7 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
             )}
 
                     </div>
-                </div>
+                
 
                 {/* Right Side: Leaderboard & Stats */}
                 <div className="lg:col-span-4 space-y-6">
