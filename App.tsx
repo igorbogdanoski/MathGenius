@@ -83,15 +83,15 @@ const MainRouter = () => {
     // APP VIEW: Either Lesson Map or Active Lesson
     const isInLesson = userState.currentLessonId !== null && userState.currentLessonId !== 'Finished';
 
-    if (isInLesson) {
-        return (
-            <LessonProvider>
+    return (
+        <LessonProvider>
+            {isInLesson ? (
                 <ActiveLesson />
-            </LessonProvider>
-        );
-    }
-
-    return <LessonMap onEnterTeacherMode={() => setView('TEACHER')} />;
+            ) : (
+                <LessonMap onEnterTeacherMode={() => setView('TEACHER')} />
+            )}
+        </LessonProvider>
+    );
 };
 
 const App = () => {
