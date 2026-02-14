@@ -135,7 +135,11 @@ class DataService {
                     status: data.status || 'On Track',
                     weakestTopic: data.weakestTopic || 'N/A',
                     strongestTopic: data.strongestTopic || 'N/A',
-                    lastActive: data.lastActive ? new Date(data.lastActive).toLocaleTimeString() : 'Unknown',
+                    lastActive: (() => {
+                        try {
+                            return data.lastActive ? new Date(data.lastActive).toLocaleTimeString() : 'Unknown';
+                        } catch(e) { return 'Just now'; }
+                    })(),
                     history: data.history || []
                 });
             });

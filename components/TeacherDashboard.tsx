@@ -39,7 +39,7 @@ const TeacherDashboard: React.FC<Props> = ({ onBack, onExport, onImport }) => {
       const roster = await dataService.getClassRoster();
       setStudents(roster);
       
-      const content = dataService.getCustomProblems();
+      const content = await dataService.getCustomProblems();
       setCustomProblems(content);
       
       setLoading(false);

@@ -57,12 +57,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         const saved = await dataService.loadUserState(existingId);
         if (saved) {
-             // Migration checks
-             if (!saved.userId) saved.userId = `user_${Math.random().toString(36).substr(2, 9)}`;
-             if (!saved.inventory) saved.inventory = DEFAULT_STATE.inventory;
-             if (!saved.completedLessons) saved.completedLessons = [];
-             if (!saved.badges) saved.badges = [];
-             setUserState(saved);
+             // Robust Migration & Sanity Checks
+             const merged = { ...DEFAULT_STATE, ...saved };
+             
+             // Ensure critical arrays and objects exist
+             if (!merged.inventory) merged.inventory = DEFAULT_STATE.inventory;
+             if (!merged.completedLessons) merged.completedLessons = [];
+             if (!merged.badges) merged.badges = [];
+             if (!merged.history) merged.history = [];
+             if (!merged.equipped) merged.equipped = DEFAULT_STATE.equipped;
+             if (!merged.userId) merged.userId = `user_${Math.random().toString(36).substr(2, 9)}`;
+             
+             // Validate language
+             const validLangs = ['MK', 'EN', 'SQ', 'TR'];
+             if (!validLangs.includes(merged.language)) merged.language = 'MK';
+
+             setUserState(merged);
         } else {
              // Create new user with unique ID
              const newId = `user_${Math.random().toString(36).substr(2, 9)}`;

@@ -234,6 +234,7 @@ export const LessonProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       feedback,
       specificError,
       loadingVariation,
+      loadingBoss,
       hasExplained,
       lessonComplete,
       startLesson,

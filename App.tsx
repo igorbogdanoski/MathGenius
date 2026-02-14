@@ -7,6 +7,42 @@ import ActiveLesson from './components/ActiveLesson';
 import { UserProvider, useUser } from './context/UserContext';
 import { LessonProvider } from './context/LessonContext';
 
+// Simple Error Boundary for easier debugging of white screens
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any}> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("CRITICAL UI ERROR:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-red-50 p-6 text-center font-sans">
+          <div className="max-w-md">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h1>
+            <p className="text-slate-600 mb-6">The application crashed. This usually happens due to a data sync error or missing configuration.</p>
+            <pre className="bg-red-100 p-4 rounded-lg text-xs text-red-800 text-left overflow-auto max-h-40 mb-6">
+              {this.state.error?.toString()}
+            </pre>
+            <button 
+              onClick={() => { localStorage.clear(); window.location.reload(); }}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg font-bold shadow-lg"
+            >
+              Reset Data & Reload
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const MainRouter = () => {
     const { userState, registerUser, isLoading } = useUser();
     const [view, setView] = useState<'WELCOME' | 'APP' | 'TEACHER'>('WELCOME');
@@ -60,9 +96,11 @@ const MainRouter = () => {
 
 const App = () => {
   return (
-    <UserProvider>
-        <MainRouter />
-    </UserProvider>
+    <ErrorBoundary>
+        <UserProvider>
+            <MainRouter />
+        </UserProvider>
+    </ErrorBoundary>
   );
 };
 

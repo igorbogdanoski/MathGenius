@@ -17,15 +17,21 @@ const firebaseConfig = {
 
 // Initialize Firebase only if we have a valid key (prevents crashing in pure demo mode without keys)
 let app;
-let db: any;
-let auth: any;
+let db: any = null;
+let auth: any = null;
 
-try {
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-} catch (e) {
-    console.warn("Firebase config missing or invalid. Falling back to local storage mode.");
+const hasConfig = firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.apiKey !== "undefined";
+
+if (hasConfig) {
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+    } catch (e) {
+        console.warn("Firebase initialization failed:", e);
+    }
+} else {
+    console.warn("Firebase config missing. Falling back to local storage mode.");
 }
 
 export { db, auth };
