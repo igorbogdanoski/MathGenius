@@ -3,11 +3,12 @@ import { Problem } from '../types';
 
 // In a real scenario, we use the API key. 
 // For this demo, we mock the response to avoid crashing if no key is present.
-const isConfigured = !!import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.VITE_GEMINI_API_KEY : undefined);
+const isConfigured = !!API_KEY;
 
 let ai: GoogleGenerativeAI | null = null;
 if (isConfigured) {
-  ai = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
+  ai = new GoogleGenerativeAI(API_KEY as string);
 }
 
 export const generateExplanation = async (problem: Problem, language: string): Promise<string> => {

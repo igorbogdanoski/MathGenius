@@ -97,8 +97,11 @@ export const LessonProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setLessonComplete(false);
     resetProblemState();
     
-    // Update User Context that we are in a lesson
-    updateUser({ currentLessonId: lessonId, currentProblemIndex: 0 });
+    // Explicitly force index 0 in user state too
+    updateUser({ 
+        currentLessonId: lessonId, 
+        currentProblemIndex: 0 
+    });
   };
 
   const resetProblemState = () => {
@@ -152,7 +155,14 @@ export const LessonProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     if (isCorrect) {
        soundService.playCorrect();
-       addMasteryPoints(userState.path === 'Challenge' ? 20 : 10);
+       
+       let basePoints = userState.path === 'Challenge' ? 20 : 10;
+       
+       // Streak Multiplier
+       if (userState.streak >= 5) basePoints += 10;
+       else if (userState.streak >= 3) basePoints += 5;
+       
+       addMasteryPoints(basePoints);
        incrementStreak();
        
        // Record History

@@ -16,6 +16,7 @@ interface UserContextType {
   registerUser: (lang: Language, name: string) => void;
   completeLessonDiagnostic: (newPath: 'Focus' | 'Practice' | 'Challenge') => void;
   markLessonComplete: (lessonId: string) => void;
+  resetProgress: () => void;
   isLoading: boolean;
   isSyncing: boolean;
 }

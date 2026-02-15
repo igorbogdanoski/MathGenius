@@ -118,8 +118,14 @@ const LessonMap: React.FC<Props> = ({ onEnterTeacherMode }) => {
                 <div className="flex items-center gap-1 text-yellow-600 font-bold bg-yellow-50 px-3 py-1 rounded-full border border-yellow-100">
                    <Trophy className="w-4 h-4 fill-yellow-500" /> <span>{userState.masteryPoints}</span>
                 </div>
-                <div className="flex items-center gap-1 text-orange-500 font-bold bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
-                   <Flame className="w-4 h-4 fill-orange-500" /> <span>{userState.streak}</span>
+                <div className="flex items-center gap-1 text-orange-500 font-bold bg-orange-50 px-3 py-1 rounded-full border border-orange-100 relative">
+                   <Flame className={`w-4 h-4 fill-orange-500 ${userState.streak >= 3 ? 'animate-bounce' : ''}`} />
+                   <span>{userState.streak}</span>
+                   {userState.streak >= 3 && (
+                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full animate-pulse border border-white">
+                       HOT
+                     </span>
+                   )}
                 </div>
                 <button 
                   onClick={resetProgress}

@@ -21,8 +21,10 @@ const AIIllustration: React.FC<Props> = ({ description }) => {
       setError(false);
       setSvgContent(null);
 
-      // Check if we have an API key (mock check)
-      if (!process.env.VITE_GEMINI_API_KEY) {
+      // Check if we have an API key (Vite standard)
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
          // Mock delay for demo purposes if no key
          setTimeout(() => {
              if(mounted) {
@@ -74,7 +76,7 @@ const AIIllustration: React.FC<Props> = ({ description }) => {
              <Image className="w-6 h-6" />
            </div>
            <span className="text-xs text-center px-4">
-             {process.env.VITE_GEMINI_API_KEY ? "Could not generate image." : "Connect API Key to see AI illustrations"}
+             {import.meta.env.VITE_GEMINI_API_KEY ? "Could not generate image." : "Connect API Key to see AI illustrations"}
            </span>
            <p className="text-[10px] mt-1 text-gray-400 italic">"{description}"</p>
         </div>

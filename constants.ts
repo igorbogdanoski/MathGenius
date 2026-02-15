@@ -240,6 +240,97 @@ export const SAMPLE_LESSON: Lesson = {
       },
       correctAnswer: "5"
     },
+    {
+      id: "GS_Q1",
+      lessonId: "Start",
+      type: "multiple_choice",
+      difficulty: "Focus",
+      question: {
+        MK: "Која од следниве равенки претставува права линија?",
+        EN: "Which of the following equations represents a straight line?",
+        SQ: "Cili nga ekuacionet e mëposhtme përfaqëson një vijë të drejtë?",
+        TR: "Aşağıdaki denklemlerden hangisi doğru bir çizgiyi temsil eder?"
+      },
+      options: [
+        { id: "a", text: "$y = x^2 + 1$" },
+        { id: "b", text: "$y = 3x - 5$" },
+        { id: "c", text: "$y = \\sqrt{x}$" },
+        { id: "d", text: "$y = 1/x$" }
+      ],
+      ai_tutor_logic: {
+        hint: {
+          MK: "Линеарна равенка секогаш има форма $y = mx + c$.",
+          EN: "A linear equation always has the form $y = mx + c$.",
+          SQ: "Një ekuacion linear ka gjithmonë formën $y = mx + c$.",
+          TR: "Doğrusal bir denklem her zaman $y = mx + c$ formundadır."
+        },
+        explanation: {
+          MK: "$y = 3x - 5$ е во форма $y = mx + c$, каде $m=3$ и $c=-5$.",
+          EN: "$y = 3x - 5$ is in the form $y = mx + c$, where $m=3$ and $c=-5$.",
+          SQ: "$y = 3x - 5$ është në formën $y = mx + c$, ku $m=3$ dhe $c=-5$.",
+          TR: "$y = 3x - 5$ denklemi $y = mx + c$ formundadır, burada $m=3$ ve $c=-5$."
+        }
+      },
+      correctAnswer: "b"
+    },
+    {
+      id: "GS_Q2",
+      lessonId: "Start",
+      type: "input",
+      difficulty: "Practice",
+      question: {
+        MK: "Ако $y = 4x + 2$, која е вредноста на $y$ кога $x = 3$?",
+        EN: "If $y = 4x + 2$, what is the value of $y$ when $x = 3$?",
+        SQ: "Nëse $y = 4x + 2$, cila është vlera e $y$ kur $x = 3$?",
+        TR: "Eğer $y = 4x + 2$ ise, $x = 3$ olduğunda $y$'nin değeri nedir?"
+      },
+      ai_tutor_logic: {
+        hint: {
+          MK: "Замени го $x$ со 3 во равенката.",
+          EN: "Substitute $x$ with 3 in the equation.",
+          SQ: "Zëvendësoni $x$ me 3 në ekuacion.",
+          TR: "Denklemde $x$ yerine 3 koyun."
+        },
+        explanation: {
+          MK: "$y = 4(3) + 2 = 12 + 2 = 14$.",
+          EN: "$y = 4(3) + 2 = 12 + 2 = 14$.",
+          SQ: "$y = 4(3) + 2 = 12 + 2 = 14$.",
+          TR: "$y = 4(3) + 2 = 12 + 2 = 14$."
+        }
+      },
+      correctAnswer: "14"
+    },
+    {
+      id: "GS_Q3",
+      lessonId: "Start",
+      type: "graphing",
+      difficulty: "Challenge",
+      question: {
+        MK: "Нацртај ја правата $y = x$. (Потребни се најмалку две точки).",
+        EN: "Plot the line $y = x$. (At least two points required).",
+        SQ: "Vizatoni vijën $y = x$. (Kërkohen të paktën dy pika).",
+        TR: "$y = x$ doğrusunu çizin. (En az iki nokta gereklidir)."
+      },
+      graphConfig: {
+        equation: "y=x",
+        requiredPoints: 2
+      },
+      ai_tutor_logic: {
+        hint: {
+          MK: "Секоја точка на оваа права има иста x и y вредност, пр. (0,0), (1,1).",
+          EN: "Every point on this line has the same x and y value, e.g., (0,0), (1,1).",
+          SQ: "Çdo pikë në këtë vijë ka të njëjtën vlerë x dhe y, p.sh., (0,0), (1,1).",
+          TR: "Bu doğru üzerindeki her nokta aynı x ve y değerine sahiptir, örn. (0,0), (1,1)."
+        },
+        explanation: {
+          MK: "Бидејќи $y=x$, за секој $x$ добиваме ист $y$. Правата минува низ центарот под агол од 45 степени.",
+          EN: "Since $y=x$, for every $x$ we get the same $y$. The line passes through the origin at a 45-degree angle.",
+          SQ: "Meqenëse $y=x$, për çdo $x$ marrim të njëjtin $y$. Linja kalon përmes origjinës në një kënd 45 gradë.",
+          TR: "$y=x$ olduğu için her $x$ için aynı $y$ değerini alırız. Doğru, orijinden 45 derecelik bir açıyla geçer."
+        }
+      },
+      correctAnswer: "y=x"
+    },
 
     // ==========================================
     // WORKBOOK 11.1: FUNCTIONS
@@ -298,6 +389,33 @@ export const SAMPLE_LESSON: Lesson = {
         }
       },
       correctAnswer: "L=37-6t"
+    },
+    {
+      id: "11.1_WB_Q5",
+      lessonId: "11.1_WB",
+      type: "input",
+      difficulty: "Practice",
+      question: {
+        MK: "Правоаголник има должина $x$ и ширина 4. Напиши формула за периметарот $P$.",
+        EN: "A rectangle has length $x$ and width 4. Write a formula for the perimeter $P$.",
+        SQ: "Një drejtkëndësh ka gjatësi $x$ dhe gjerësi 4. Shkruani një formulë për periudhën $P$.",
+        TR: "Bir dikdörtgenin uzunluğu $x$ ve genişliği 4'tür. Çevre $P$ için bir formül yazın."
+      },
+      ai_tutor_logic: {
+        hint: {
+          MK: "Периметар е збир од сите страни: $P = x + x + 4 + 4$.",
+          EN: "Perimeter is the sum of all sides: $P = x + x + 4 + 4$.",
+          SQ: "Perimetri është shuma e të gjitha brinjëve: $P = x + x + 4 + 4$.",
+          TR: "Çevre tüm kenarların toplamıdır: $P = x + x + 4 + 4$."
+        },
+        explanation: {
+          MK: "Ги собираме двете должини и двете ширини: $P = 2x + 8$.",
+          EN: "We add the two lengths and two widths: $P = 2x + 8$.",
+          SQ: "Mbledhim dy gjatësitë dhe dy gjerësitë: $P = 2x + 8$.",
+          TR: "İki uzunluğu ve iki genişliği topluyoruz: $P = 2x + 8$."
+        }
+      },
+      correctAnswer: "P=2x+8"
     },
 
     {
