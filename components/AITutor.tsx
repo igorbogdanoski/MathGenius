@@ -68,9 +68,9 @@ const AITutor: React.FC<Props> = ({ problem, language, onScaffoldRequest }) => {
   const labels = UI_LABELS[language];
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
       {isOpen && (
-        <div className="mb-4 w-80 bg-white rounded-xl shadow-2xl border border-indigo-100 overflow-hidden flex flex-col max-h-[500px] animate-in slide-in-from-bottom-4 duration-300">
+        <div className="mb-4 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-xl shadow-2xl border border-indigo-100 overflow-hidden flex flex-col max-h-[500px] animate-in slide-in-from-bottom-4 duration-300">
           <div className="bg-indigo-600 p-4 flex justify-between items-center text-white shrink-0">
             <div className="flex items-center gap-2">
               <GraduationCap className="w-5 h-5" />
@@ -165,17 +165,19 @@ const AITutor: React.FC<Props> = ({ problem, language, onScaffoldRequest }) => {
       <div className="flex gap-2">
         <button
           onClick={handleChatMode}
-          className="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110 active:scale-95 flex items-center gap-2 font-semibold pr-4"
+          className="bg-indigo-600 text-white p-3 sm:pr-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110 active:scale-95 flex items-center gap-2 font-semibold"
+          title={labels.tutorName}
         >
           <MessageCircle className="w-5 h-5" />
-          {labels.tutorName}
+          <span className="hidden sm:inline">{labels.tutorName}</span>
         </button>
         <button
           onClick={handleHint}
-          className="bg-white text-indigo-600 p-3 rounded-full shadow-lg border border-indigo-100 hover:bg-indigo-50 transition-all hover:scale-110 active:scale-95 flex items-center gap-2 font-semibold pr-4"
+          className="bg-white text-indigo-600 p-3 sm:pr-4 rounded-full shadow-lg border border-indigo-100 hover:bg-indigo-50 transition-all hover:scale-110 active:scale-95 flex items-center gap-2 font-semibold"
+          title={labels.hint}
         >
           <Lightbulb className="w-5 h-5 text-yellow-500" />
-          {labels.hint}
+          <span className="hidden sm:inline">{labels.hint}</span>
         </button>
       </div>
     </div>
